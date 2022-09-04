@@ -1,13 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import validator from 'validator';
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const EMAIL_REGEX = /\S+@\S+\.\S+/;
 
 const Register = () => {
   const userRef = useRef();
   const errRef = useRef();
+
+  const [email, setEmail] = useState('');
+  const [validEmail, setValidEmail] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
 
   const [user, setUser] = useState('');
   const [validName, setValidName] = useState(false);
@@ -29,6 +35,13 @@ const Register = () => {
   }, [])
 
   useEffect(() => {
+    const result = EMAIL_REGEX.test(email);
+    console.log(result);
+    console.log(email);
+    setValidEmail(result);
+  }, [email])
+
+  useEffect(() => {
     const result = USER_REGEX.test(user);
     console.log(result);
     console.log(user);
@@ -46,13 +59,40 @@ const Register = () => {
 
   useEffect(() => {
     setErrMsg('');
-  }, [user, pwd, matchPwd])
+  }, [email, user, pwd, matchPwd])
 
   return (
     <section>
       <p ref={errRef} className={errMsg ? "errMsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
       <h1>Register</h1>
       <form>
+        {/* EMAIL */}
+        <label htmlFor="email">
+          Email:
+          <span className={validEmail ? "valid" : "hide"}>
+            <FontAwesomeIcon icon={faCheck} />
+          </span>
+          <span className={validEmail || !email ? "hide" : "invalid"}>
+            <FontAwesomeIcon icon={faTimes} />
+          </span>
+        </label>
+        <input
+          type="text"
+          id="email"
+          ref={userRef}
+          autoComplete="off"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          aria-invalid={validEmail ? "false" : "true"}
+          aria-describedby="emailnote"
+          onFocus={() => setEmailFocus(true)}
+          onBlur={() => setEmailFocus(false)}
+        />
+        <p id="emailnote" className={emailFocus && email && 
+        !validEmail ? "instructions" : "offscreen"}>
+          <FontAwesomeIcon icon={faInfoCircle} />
+          Invalid email address.
+        </p>
 
         {/* USERNAME */}
         <label htmlFor="username">
