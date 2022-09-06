@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from './api/axios';
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /\S+@\S+\.\S+/;
+const REGISTER_URL = '/registe';
 
 const Register = () => {
   const userRef = useRef();
@@ -69,7 +71,28 @@ const Register = () => {
       return;
     }
 
-    setSuccess(true);
+    try {
+      const response = await axios.post(
+        REGISTER_URL, JSON.stringify({email, user, pwd}),
+        {
+          headers: {'Content-type' : 'application/json'},
+          withCredentials: true
+        }
+      );
+      console.log(response.data);
+      console.log(response.accessToken);
+      console.log(JSON.stringify(response));
+      setSuccess(true);
+    } catch (error) {
+      if (!error?.response) {
+        setErrMsg('No server response');
+      } else if (error.response?.status === 409) {
+        setErrMsg('Username taken');
+      } else {
+        setErrMsg('Registration failed');
+      }
+      errRef.current.focus();
+    }
   }
 
   return (
