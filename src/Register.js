@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Email from './Email';
+import Username from './Username';
+import Password from './Password';
+import ConfirmPassword from './ConfirmPassword';
 import axios from './api/axios';
 
-const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-const EMAIL_REGEX = /\S+@\S+\.\S+/;
 const REGISTER_URL = '/registe';
 
 const Register = () => {
@@ -16,9 +15,9 @@ const Register = () => {
   const [validEmail, setValidEmail] = useState(false);
   const [emailFocus, setEmailFocus] = useState(false);
 
-  const [user, setUser] = useState('');
+  const [userName, setUserName] = useState('');
   const [validName, setValidName] = useState(false);
-  const [userFocus, setUserFocus] = useState(false);
+  const [userNameFocus, setUserNameFocus] = useState(false);
 
   const [pwd, setPwd] = useState('');
   const [validPwd, setValidPwd] = useState(false);
@@ -36,64 +35,43 @@ const Register = () => {
   }, [])
 
   useEffect(() => {
-    const result = EMAIL_REGEX.test(email);
-    console.log(result);
-    console.log(email);
-    setValidEmail(result);
-  }, [email])
-
-  useEffect(() => {
-    const result = USER_REGEX.test(user);
-    console.log(result);
-    console.log(user);
-    setValidName(result);
-  }, [user])
-
-  useEffect(() => {
-    const result = PWD_REGEX.test(pwd);
-    console.log(result);
-    console.log(pwd);
-    setValidPwd(result);
-    const match = pwd === matchPwd;
-    setValidMatch(match);
-  }, [pwd, matchPwd])
-
-  useEffect(() => {
     setErrMsg('');
-  }, [email, user, pwd, matchPwd])
+  }, [email, userName, pwd, matchPwd])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const userValid = USER_REGEX.test(user);
-    const pwdValid = PWD_REGEX.test(pwd);
-    if (!userValid || !pwdValid) {
-      setErrMsg('Invalid Entry');
-      return;
-    }
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const userValid = USER_REGEX.test(user);
+  //   const pwdValid = PWD_REGEX.test(pwd);
+  //   if (!userValid || !pwdValid) {
+  //     setErrMsg('Invalid Entry');
+  //     return;
+  //   }
 
-    try {
-      const response = await axios.post(
-        REGISTER_URL, JSON.stringify({email, user, pwd}),
-        {
-          headers: {'Content-type' : 'application/json'},
-          withCredentials: true
-        }
-      );
-      console.log(response.data);
-      console.log(response.accessToken);
-      console.log(JSON.stringify(response));
-      setSuccess(true);
-    } catch (error) {
-      if (!error?.response) {
-        setErrMsg('No server response');
-      } else if (error.response?.status === 409) {
-        setErrMsg('Username taken');
-      } else {
-        setErrMsg('Registration failed');
-      }
-      errRef.current.focus();
-    }
-  }
+  //   try {
+  //     const response = await axios.post(
+  //       REGISTER_URL, JSON.stringify({email, user, pwd}),
+  //       {
+  //         headers: {'Content-type' : 'application/json'},
+  //         withCredentials: true
+  //       }
+  //     );
+  //     console.log(response.data);
+  //     console.log(response.accessToken);
+  //     console.log(JSON.stringify(response));
+  //     setSuccess(true);
+  //   } catch (error) {
+  //     if (!error?.response) {
+  //       setErrMsg('No server response');
+  //     } else if (error.response?.status === 409) {
+  //       setErrMsg('Username taken');
+  //     } else {
+  //       setErrMsg('Registration failed');
+  //     }
+  //     errRef.current.focus();
+  //   }
+  // }
+
+
 
   return (
       <>
@@ -105,119 +83,51 @@ const Register = () => {
         <section>
           <p ref={errRef} className={errMsg ? "errMsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
           <h1>Register</h1>
-          <form onSubmit={handleSubmit}>
+          <form>
+          {/* onSubmit={handleSubmit} */}
             {/* EMAIL */}
-            <label htmlFor="email">
-              Email:
-              <span className={validEmail ? "valid" : "hide"}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={validEmail || !email ? "hide" : "invalid"}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span>
-            </label>
-            <input
-              type="text"
-              id="email"
-              ref={userRef}
-              autoComplete="off"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              aria-invalid={validEmail ? "false" : "true"}
-              aria-describedby="emailnote"
-              onFocus={() => setEmailFocus(true)}
-              onBlur={() => setEmailFocus(false)}
+            <Email 
+              email={email}
+              userRef={userRef}
+              setEmail={setEmail}
+              validEmail={validEmail}
+              setValidEmail={setValidEmail}
+              emailFocus={emailFocus}
+              setEmailFocus={setEmailFocus}
             />
-            <p id="emailnote" className={emailFocus && email && 
-            !validEmail ? "instructions" : "offscreen"}>
-              <FontAwesomeIcon icon={faInfoCircle} />
-              Invalid email address.
-            </p>
-
-            {/* USERNAME */}
-            <label htmlFor="username">
-              Username:
-              <span className={validName ? "valid" : "hide"}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={validName || !user ? "hide" : "invalid"}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span>
-            </label>
-            <input
-              type="text"
-              id="username"
-              ref={userRef}
-              autoComplete="off"
-              onChange={(e) => setUser(e.target.value)}
-              required
-              aria-invalid={validName ? "false" : "true"}
-              aria-describedby="uidnote"
-              onFocus={() => setUserFocus(true)}
-              onBlur={() => setUserFocus(false)}
-            />
-            <p id="uidnote" className={userFocus && user && 
-            !validName ? "instructions" : "offscreen"}>
-              <FontAwesomeIcon icon={faInfoCircle} />
-              4 to 24 characters.<br />
-              Must begin with a letter. <br />
-              Letters, numbers, underscores, hyphens allowed.
-            </p>
             
-            {/* PASSWORD */}
-            <label htmlFor="password">
-              Password:
-              <span className={validPwd ? "valid" : "hide"}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={validPwd || !pwd ? "hide" : "invalid"}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span>
-            </label>
-            <input 
-              type="password"
-              id="password"
-              onChange={(e) => setPwd(e.target.value)}
-              required
-              aria-invalid={validPwd ? "false" : "true"}
-              aria-describedby="pwdnote"
-              onFocus={() => setPwdFocus(true)}
-              onBlur={() => setPwdFocus(false)}
+            {/* USERNAME */}
+            <Username 
+              userName={userName}
+              setUserName={setUserName}
+              validName={validName}
+              setValidName={setValidName}
+              userNameFocus={userNameFocus}
+              setUserNameFocus={setUserNameFocus}
             />
-            <p id="pwdnote" className={pwdFocus && !validPwd ? "instructions" : "offscreen"}>
-              <FontAwesomeIcon icon={faInfoCircle}/>
-              8 to 24 characters. <br />
-              Must include uppercase and lowercase letters, a number and special
-              character. <br />
-              Allowed special characters: <span aria-label="exclamation mark">! </span>  
-              <span aria-label="at symbol">@ </span><span aria-label="hashtag"># </span>
-              <span aria-label="dollar sign">$ </span><span aria-label="percent">%</span>
-            </p>
+
+            {/* PASSWORD */}
+            <Password 
+              pwd={pwd}
+              setPwd={setPwd}
+              validPwd={validPwd}
+              setValidPwd={setValidPwd}
+              pwdFocus={pwdFocus}
+              setPwdFocus={setPwdFocus}
+              matchPwd={matchPwd}
+              setValidMatch={setValidMatch}
+            />
 
             {/* Confirmation Password */}
-            <label htmlFor="confirm_pwd">
-              Confirm Password:
-              <span className={validMatch && matchPwd ? "valid" : "hide"}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={validMatch || !matchPwd  ? "hide" : "invalid"}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span>
-            </label>
-            <input 
-              type="password"
-              id="confirm_pwd"
-              onChange={(e) => setMatchPwd(e.target.value)}
-              required
-              aria-invalid={validMatch ? "false" : "true"}
-              aria-describedby="confirmnote"
-              onFocus={() => setMatchFocus(true)}
-              onBlur={() => setMatchFocus(false)}
+            <ConfirmPassword 
+              matchPwd={matchPwd}
+              setMatchPwd={setMatchPwd}
+              validMatch={validMatch}
+              setValidMatch={setValidMatch}
+              matchFocus={matchFocus}
+              setMatchFocus={setMatchFocus}
             />
-            <p id="confirmnote" className={matchFocus && !validMatch ? "instructions" : "offscreen"} >
-              <FontAwesomeIcon icon={faInfoCircle} />
-              Must match the first password input field.
-            </p>
+
             <button disabled={!validEmail || !validPwd || !validName || !validMatch ? true : false}>Sign Up</button>
           </form>
         </section>
