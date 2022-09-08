@@ -1,28 +1,22 @@
 {
-  "registe": [
+  "register": [
     {
-      "email": "meirzhan.kulmanov@list.ru",
-      "user": "Miko",
+      "email": "Miko@list.ru",
+      "userName": "Miko",
       "pwd": "Miko1234%",
       "id": 1
     },
     {
-      "email": "Mier@list.ru",
-      "user": "Miko",
-      "pwd": "mIKO12345%",
+      "email": "Miko@list.ru",
+      "userName": "Mikos",
+      "pwd": "Miko1234%",
       "id": 2
     },
     {
-      "email": "m@list.ru",
-      "user": "Miko",
-      "pwd": "Miko12345%",
+      "email": "Miko@list.ru",
+      "userName": "Mikos",
+      "pwd": "Miko1234%",
       "id": 3
-    },
-    {
-      "email": "Mio@lis.ru",
-      "user": "Miko",
-      "pwd": "1234Miko%",
-      "id": 4
     }
   ]
 }

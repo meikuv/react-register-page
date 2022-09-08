@@ -115,6 +115,8 @@ button {
 }
 
 .spinner {
+    color: limegreen;
+    margin-left: 0.25rem;
     animation: rotation 2s infinite linear;
 }
 
