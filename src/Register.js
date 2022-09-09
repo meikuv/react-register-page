@@ -14,9 +14,9 @@ const Register = () => {
 
   const [user, setUser] = useState([]);
   
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [userNameUnique, setUserNameUnique] = useState(null);
+  const [isUnique, setIsUnique] = useState(true);
 
   const [email, setEmail] = useState('');
   const [validEmail, setValidEmail] = useState(false);
@@ -61,6 +61,7 @@ const Register = () => {
     setIsLoading(true);
     if (result) {
       setValidName(result);
+      setIsUnique(user.filter(user => user.userName === userName)[0]?.userName)
       setTimeout(() => {
         setIsLoading(false)
       }, 1000);
@@ -70,7 +71,7 @@ const Register = () => {
         setIsLoading(false)
       }, 1000);
     }
-  }, [userName])
+  }, [user, userName])
 
   useEffect(() => {
     setValidPwd(PWD_REGEX.test(pwd));
@@ -157,12 +158,6 @@ const Register = () => {
             {/* USERNAME */}
             <label htmlFor="username">
               Username:
-              {/* <span className={validName ? "valid" : "hide"}>
-                <FontAwesomeIcon icon={faCheck} />
-              </span>
-              <span className={validName || !userName ? "hide" : "invalid"}>
-                <FontAwesomeIcon icon={faTimes} />
-              </span> */}
               <>
                 {validName ? (
                   <>
@@ -172,18 +167,17 @@ const Register = () => {
                       </span>
                     ) : (
                       <>
-                        {  ? (
+                        { isUnique ? (
                           <FontAwesomeIcon icon={faTimes} className="invalid" />
                         ) : (
                           <FontAwesomeIcon icon={faCheck} className="valid" />
                         )}
-                       
                       </>
                     )}
                   </>
                 ) : (
                   <span className={!userName ? "hide" : "invalid"}>
-                    asf
+                      asd
                     <FontAwesomeIcon icon={faTimes} />
                   </span>
                 )}
@@ -262,7 +256,7 @@ const Register = () => {
               <FontAwesomeIcon icon={faInfoCircle} />
               Must match the first password input field.
             </p>
-            <button disabled={!validEmail || !validPwd || !validName || !validMatch ? true : false}>Sign Up</button>
+            <button disabled={!validEmail || !validPwd || !validName || !validMatch || isUnique || isLoading ? true : false}>Sign Up</button>
           </form>
         </section>
       )}
